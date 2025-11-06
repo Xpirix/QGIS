@@ -52,25 +52,7 @@ jobs:
       fail-fast: false
 
     steps:
-
-      - name: Build Docker Container with Testing Environment
-        id: docker-build
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: .docker/qgis3-${{ matrix.distro }}-qt${{ matrix.qt-version }}-build-deps.dockerfile
-          tags: qgis/qgis3-${{ matrix.distro }}-qt${{ matrix.qt-version }}-build-deps-bin-only:${{ github.event.pull_request.base.ref || github.ref_name }}
-          push: ${{ github.event_name == 'push' && github.repository == 'qgis/QGIS' }}
-          load: ${{ !(github.event_name == 'push' && github.repository == 'qgis/QGIS') }}
-          pull: true
-          target: ${{ matrix.docker-target }}
-          build-args:
-            DISTRO_VERSION=${{ matrix.distro-version }}
-
-      - name: Tag image
-        run: docker tag ${{ steps.docker-build.outputs.imageid }} qgis3-build-deps-binary-image
-
-
+    
       - name: Run tests
         id: tests
         env:
@@ -87,6 +69,5 @@ jobs:
           echo "TEST_BATCH=$TEST_BATCH"
           echo "DOCKERFILE=$DOCKERFILE"
           echo "TEST_BLOCKLIST_FILE=$TEST_BLOCKLIST_FILE"
-          mkdir -p /tmp/webdav_tests && sudo chmod -R 777 /tmp/webdav_tests
-          mkdir -p /tmp/minio_tests/test-bucket && sudo chmod -R 777 /tmp/minio_tests
-          docker compose -f .docker/$DOCKERFILE run -e GITHUB_SHA=$GITHUB_SHA qgis-deps run echo "Setup done"
+          mkdir -p /tmp/webdav_tests && chmod -R 777 /tmp/webdav_tests
+          mkdir -p /tmp/minio_tests/test-bucket && chmod -R 777 /tmp/minio_tests
