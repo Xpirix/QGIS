@@ -137,7 +137,7 @@ fi
 mkdir -p /tmp/minio_tests/test-bucket && chmod -R 777 /tmp/minio_tests
 
 # Create an empty webdav folder with appropriate permissions so www user can write inside it
-mkdir -p /tmp/webdav_tests && chmod 777 /tmp/webdav_tests
+mkdir -p /tmp/webdav_tests && chmod -R 777 /tmp/webdav_tests
 
 ${DOCKER_COMPOSE} \
   -f .docker/docker-compose-testing.yml \

@@ -5,18 +5,20 @@ services:
       dockerfile: Dockerfile-postgis
       context: ../tests/testdata
     environment:
-      - ALLOW_IP_RANGE="172.18.0.0/16"
+      - ALLOW_IP_RANGE="0.0.0.0/0"
 # The following files are added in Dockerfile-postgis
       - SSL_CERT_FILE=/etc/ssl/certs/postgres.crt
       - SSL_KEY_FILE=/etc/ssl/private/postgres.key
       - SSL_CA_FILE=/etc/ssl/certs/qgis_ca.crt
+    networks:
+      - qgisnet
 
   qgis-deps:
     tty: true
     image: qgis3-build-deps-binary-image
     volumes:
       - ${QGIS_WORKSPACE}:/root/QGIS
-    links:
+    depends_on:
       - postgres
     env_file:
       - docker-variables.env
@@ -25,3 +27,9 @@ services:
       - LC_ALL=en_US.UTF-8
     cap_add:
       - NET_ADMIN
+    networks:
+      - qgisnet
+
+networks:
+  qgisnet:
+    driver: bridge
