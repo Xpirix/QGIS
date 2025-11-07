@@ -414,7 +414,7 @@ jobs:
           mkdir -p "$RUNNER_TEMP/tmp/webdav_tests" && chmod -R 777 "$RUNNER_TEMP/tmp/webdav_tests"
           mkdir -p "$RUNNER_TEMP/tmp/minio_tests/test-bucket" && chmod -R 777 "$RUNNER_TEMP/tmp/minio_tests"
           ls -al "$RUNNER_TEMP"
-          docker compose -f .docker/$DOCKERFILE run -e GITHUB_SHA=$GITHUB_SHA qgis-deps /root/QGIS/.docker/docker-qgis-test.sh $TEST_BATCH $TEST_BLOCKLIST_FILE
+          docker compose -f .docker/$DOCKERFILE run -e GITHUB_SHA=$GITHUB_SHA -e QGIS_RUNNER_TEMP=$RUNNER_TEMP qgis-deps /root/QGIS/.docker/docker-qgis-test.sh $TEST_BATCH $TEST_BLOCKLIST_FILE
 
       - name: Fix permissions on test report
         if: ${{ failure() }}
