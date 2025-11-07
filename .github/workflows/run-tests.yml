@@ -35,7 +35,6 @@ jobs:
     env:
       QGIS_WORKSPACE: ${{ github.workspace }} # used in docker compose
       RUN_FLAKY_TESTS: ${{ contains( github.event.pull_request.labels.*.name, 'run flaky tests') }}
-      QGIS_RUNNER_TEMP: ${{ runner.temp }}
 
     runs-on: self-hosted
     continue-on-error: ${{ matrix.experimental }}
@@ -118,7 +117,6 @@ jobs:
         env:
           GITHUB_EVENT_NAME: ${{ github.event_name }}
           GITHUB_REF: ${{ github.ref }}
-          GITHUB_PR_NUMBER: ${{github.event.number}}
         run: |
           # Be aware that these instructions are duplicated in run-tests job
           DOCKER_TAG=$(echo $( [[ ${GITHUB_EVENT_NAME} == pull_request ]] && echo ${GITHUB_BASE_REF} || echo ${GITHUB_REF##*/} ) | sed 's/^master$/latest/')
@@ -265,7 +263,6 @@ jobs:
     name: Run tests
     env:
       QGIS_WORKSPACE: ${{ github.workspace }} # used in docker compose
-      QGIS_RUNNER_TEMP: ${{ runner.temp }}
 
     runs-on: self-hosted
 
@@ -402,6 +399,7 @@ jobs:
           QGIS_COMMON_GIT_DIR: ${{ github.workspace }}
           GITHUB_SHA: ${{ github.sha }}
           TEST_BLOCKLIST_FILE: ${{matrix.test-blocklist-file}}
+          QGIS_RUNNER_TEMP: ${{ runner.temp }}
         run: |
           DOCKERFILE=$( ( [[ ${{ matrix.test-batch }} == "ORACLE"   ]] && echo "docker-compose-testing-oracle.yml" ) \
                      || ( [[ ${{ matrix.test-batch }} == "POSTGRES" ]] && echo "docker-compose-testing-postgres.yml" ) \
