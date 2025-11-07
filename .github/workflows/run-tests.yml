@@ -35,6 +35,7 @@ jobs:
     env:
       QGIS_WORKSPACE: ${{ github.workspace }} # used in docker compose
       RUN_FLAKY_TESTS: ${{ contains( github.event.pull_request.labels.*.name, 'run flaky tests') }}
+      QGIS_RUNNER_TEMP: ${{ runner.temp }}
 
     runs-on: self-hosted
     continue-on-error: ${{ matrix.experimental }}
@@ -264,6 +265,7 @@ jobs:
     name: Run tests
     env:
       QGIS_WORKSPACE: ${{ github.workspace }} # used in docker compose
+      QGIS_RUNNER_TEMP: ${{ runner.temp }}
 
     runs-on: self-hosted
 
@@ -409,12 +411,11 @@ jobs:
           echo "TEST_BATCH=$TEST_BATCH"
           echo "DOCKERFILE=$DOCKERFILE"
           echo "TEST_BLOCKLIST_FILE=$TEST_BLOCKLIST_FILE"
-          echo "QGIS_RUNNER_TEMP=$RUNNER_TEMP"
-          ls -al "$RUNNER_TEMP"
-          mkdir -p "$RUNNER_TEMP/tmp/webdav_tests" && chmod -R 777 "$RUNNER_TEMP/tmp/webdav_tests"
-          mkdir -p "$RUNNER_TEMP/tmp/minio_tests/test-bucket" && chmod -R 777 "$RUNNER_TEMP/tmp/minio_tests"
-          ls -al "$RUNNER_TEMP"
-          docker compose -f .docker/$DOCKERFILE run -e GITHUB_SHA=$GITHUB_SHA -e QGIS_RUNNER_TEMP=$RUNNER_TEMP qgis-deps /root/QGIS/.docker/docker-qgis-test.sh $TEST_BATCH $TEST_BLOCKLIST_FILE
+          echo "QGIS_RUNNER_TEMP=$QGIS_RUNNER_TEMP"
+          mkdir -p "$QGIS_RUNNER_TEMP/webdav_tests" && chmod -R 777 "$QGIS_RUNNER_TEMP/webdav_tests"
+          mkdir -p "$QGIS_RUNNER_TEMP/minio_tests/test-bucket" && chmod -R 777 "$QGIS_RUNNER_TEMP/minio_tests"
+          ls -al "$QGIS_RUNNER_TEMP"
+          docker compose -f .docker/$DOCKERFILE run -e GITHUB_SHA=$GITHUB_SHA qgis-deps /root/QGIS/.docker/docker-qgis-test.sh $TEST_BATCH $TEST_BLOCKLIST_FILE
 
       - name: Fix permissions on test report
         if: ${{ failure() }}
