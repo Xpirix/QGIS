@@ -1,0 +1,28 @@
+# Workflow to build Nix package and push it to the Cachix binary cache
+name: Nix Build and Cachix Push
+
+on:
+  push:
+    branches:
+      - release-**
+      - queued_ltr_backports
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set up Nix
+        uses: cachix/install-nix-action@v31
+
+      # Configure Cachix which will be used to push the built binaries
+      - uses: cachix/cachix-action@v16
+        with:
+          name: qgis
+          authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
+
+      # This step checks the flake, builds the Nix package and pushes the binaries to Cachix
+      - name: Run flake Checks
+        run: nix flake check
